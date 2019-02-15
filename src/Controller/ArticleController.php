@@ -42,7 +42,7 @@ class ArticleController extends AbstractController
      *
      * @return array
      */
-    public function postArticleAction(Request $request, SerializerInterface $serializer)
+    public function postArticleAction(Request $request)
     {
         $article = new Article();
         $article->setName($request->get('name'));
@@ -51,12 +51,12 @@ class ArticleController extends AbstractController
 
         $em->persist($article);
         $em->flush();
-        $error = 1;
-        if (!isset($error)) {
-
-
-            throw new NotFoundHttpException('E-File not found');
-        }
+//        $error = 1;
+//        if (!isset($error)) {
+//
+//
+//            throw new NotFoundHttpException('Article not found');
+//        }
 
         return $this->json($article);
     }
@@ -76,15 +76,34 @@ class ArticleController extends AbstractController
             } else{
             throw new NotFoundHttpException(400, 'Bad Request');
         }
-//        $article = $serializer->deserialize($request->getContent(), Article::class, 'json');
-
-//        $article = serialize($article);
-//        $article = $repository->findBy($id);
-//        $article->getName();
-
-
-//        return View::create($article, Response::HTTP_OK , []);
     }
+    /**
+     * @Route("/edit/{id}", name="edite_article", options={"expose"=true})
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function editArticleAction(Request $request, $id)
+    {
+        $text = $request->request->get('id');
+        if (isset($text) && strlen($text) > 0) {
+            $em = $this->getDoctrine()->getManager();
+            $Article = $em->getRepository(Article::class)->findBy($id);
+            if (!$Article) {
+                throw new NotFoundHttpException('Article not found');
+            }
+//            $article->setName($request->get('name'));
+//            $article->setDescription($request->get('description'));
+//            $em = $this->getDoctrine()->getManager();
+            $em->persist($Article);
+            $em->flush();
+        }
+
+//        return $this->json($Article);
+        return $this->json('edit in progress');
+    }
+
 
 }
 
